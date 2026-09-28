@@ -1,0 +1,3 @@
+# Private knowledge, local paths, and instruction backups stay out of Git by default.
+*
+!.gitignore

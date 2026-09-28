@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Wiki"
+  short_description: "Recall and preserve useful context across projects"
+  default_prompt: "Use $agent-wiki to find the relevant prior decisions for this task."

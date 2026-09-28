@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Wiki Setup"
+  short_description: "Set up a private shared wiki for coding agents"
+  default_prompt: "Use $agent-wiki-setup to set up a private Obsidian knowledge base for my agents."
