@@ -2,7 +2,7 @@
 
 [中文说明](README.zh-CN.md) · [Workflow](docs/workflow.md) · [Setup skill](skills/agent-wiki-setup/SKILL.md)
 
-A private, shared memory for agents, stored as ordinary Markdown in an Obsidian vault.
+A private, shared memory for agents, stored as ordinary Markdown in a standalone Obsidian vault named `Agent Wiki` by default.
 Keep decisions, their reasons, project constraints and reusable lessons that would otherwise need to be explained again.
 Agents search a compact local index only when that history matters, then read the relevant sections.
 
@@ -29,7 +29,9 @@ Give your agent this request:
 Use https://github.com/ryangandev/agent-wiki/tree/main/skills/agent-wiki-setup
 to set up a private Agent Wiki on my computer.
 Read SKILL.md and obtain the complete skill directory, including its scripts and assets.
-Ask for my vault path, participating agents and timezone if you cannot determine them.
+Recommend a new standalone vault named Agent Wiki and ask where to create it.
+If I choose an existing vault or say this folder is already my vault, use that root directly.
+Ask for any missing agent choices and timezone.
 Install the workflow, run its isolated verification, and configure maintenance
 through my agent host's supported scheduler if available.
 Report installation, agent access and scheduling separately.
@@ -38,6 +40,17 @@ Report installation, agent access and scheduling separately.
 In Codex, you can also ask its skill installer to install that GitHub skill URL and then invoke `$agent-wiki-setup`.
 For Claude Code or another skill-compatible host, install the complete `skills/agent-wiki-setup` directory in its supported skill location, or clone this repository and point the agent to its `SKILL.md`.
 Installing the setup skill alone does not create the wiki: run it once to choose your private destination and connections.
+
+The skill resolves the layout before installing:
+
+| Choice | Result |
+| --- | --- |
+| **New vault (recommended)** | Creates `<chosen-parent>/Agent Wiki` as its own vault |
+| **Use an existing vault, including the current folder** | Installs directly at that vault's root and preserves unrelated notes and settings |
+| **Subfolder inside an existing vault** | Creates `<vault>/Agent Wiki` only when explicitly selected |
+
+The current working directory is never assumed to be your vault.
+If the requested root already contains conflicting workflow paths, the installer stops for review.
 
 ## Set up from the command line
 
@@ -51,9 +64,10 @@ Clone this repository, then run from its root:
 git clone https://github.com/ryangandev/agent-wiki.git
 cd agent-wiki
 
-# Preview. Select an existing vault outside this checkout.
+# Preview a new standalone vault. Its parent must already exist outside this checkout.
 python3 skills/agent-wiki-setup/scripts/setup_wiki.py \
-  --vault "/path/to/your/vault" \
+  --vault "/path/to/parent/Agent Wiki" \
+  --mode new-vault \
   --agents codex claude \
   --timezone "Europe/London"
 
@@ -65,16 +79,23 @@ On Windows, use your Python executable, such as `py -3`, and put the command on 
 Existing instructions are preserved; conflicting installations are reported before writing.
 An identical rerun leaves existing knowledge and processing state intact.
 
-The installer creates:
+For an existing vault, pass its exact path with `--mode existing-vault`; `--vault .` uses the current folder itself when that is your intended vault.
+For an explicitly requested child folder, use `--mode subfolder` and optionally `--wiki-name "Agent Wiki"`.
+`--vault` is always the vault path, while the reported `wiki_root` identifies where the workflow is installed.
+
+The default layout is:
 
 ```text
-Your private vault/
-└── Agent Wiki/
-    ├── Home.md                 # Human-readable entrypoint
-    ├── wiki/                  # Canonical project, decision, topic and method pages
-    ├── sources/               # Minimal evidence, read only when needed
-    └── _system/               # Routing, policies, tools, ledger and revision history
+Agent Wiki/                    # This folder IS the vault
+├── .obsidian/                 # Minimal Obsidian configuration
+├── Home.md                    # Human-readable entrypoint
+├── wiki/                      # Canonical project, decision, topic and method pages
+├── sources/                   # Minimal evidence, read only when needed
+└── _system/                   # Routing, policies, tools, ledger and revision history
 ```
+
+Use Obsidian's **Open folder as vault** to open this exact folder.
+The installer prepares the files; it does not register or launch a vault in the app.
 
 For Codex and Claude Code, it also installs a small runtime `agent-wiki` skill and appends a routing block to the chosen agents' global instructions.
 Other agents use the generated `_system/ENTRYPOINT.md` with their own instruction mechanism.
@@ -83,12 +104,13 @@ See [installation details](skills/agent-wiki-setup/references/installation.md) f
 ## Verify and schedule
 
 ```sh
-python3 "/path/to/your/vault/Agent Wiki/_system/tools/wiki.py" check
+python3 "/path/to/parent/Agent Wiki/_system/tools/wiki.py" check
 python3 skills/agent-wiki-setup/scripts/smoke_test.py \
-  --wiki "/path/to/your/vault/Agent Wiki"
+  --wiki "/path/to/parent/Agent Wiki"
 ```
 
 The smoke test uses a disposable wiki and does not add synthetic knowledge to your real vault.
+For other layouts, replace the example path with the installer's reported `wiki_root`.
 It verifies capture, publication, duplicate handling, recall, stale-write rejection and no-op behavior.
 
 **Scheduling is a separate setup step.**
@@ -104,7 +126,7 @@ See [scheduling and acceptance](skills/agent-wiki-setup/references/automation.md
 - Exact repeated captures are deduplicated by Python; semantic merging and judgment belong to the agent.
 - Retrieval has output limits, but this is not a promise of fixed token use or perfect recall.
 - Local writers use a lock, revision checks and a recovery journal; synced devices still need one writer machine at a time.
-- Keep private backups. The generated wiki ignores its contents in Git by default; do not publish it with this distribution.
+- Keep private backups. Generated workflow files are ignored by Git by default; do not publish private knowledge with this distribution.
 - Setup initializes new wikis and refuses conflicting customizations; it is not an automatic upgrade or migration tool.
 
 ## Develop

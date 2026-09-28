@@ -37,8 +37,9 @@ class WorkflowTests(unittest.TestCase):
         self.home = self.folder / 'home'
         self.root = self.vault / 'Agent Wiki'
 
-    def setup_cli(self, *args, ok=True):
-        r = subprocess.run([sys.executable, str(SETUP), '--vault', str(self.vault), '--home', str(self.home), *args],
+    def setup_cli(self, *args, ok=True, mode='subfolder', vault=None):
+        r = subprocess.run([sys.executable, str(SETUP), '--vault', str(vault or self.vault), '--mode', mode,
+                            '--home', str(self.home), *args],
                            capture_output=True, text=True, encoding='utf-8')
         self.assertEqual(r.returncode == 0, ok, r.stderr)
         return json.loads(r.stdout if ok else r.stderr)
@@ -65,6 +66,87 @@ class WorkflowTests(unittest.TestCase):
         before = smoke.snapshot(self.folder)
         self.assertEqual(self.setup_cli('--agents','codex','claude')['mode'], 'preview')
         self.assertEqual(before, smoke.snapshot(self.folder))
+
+    def test_standalone_vault_is_default_and_has_no_nested_folder(self):
+        root = self.folder / 'Agent Wiki'
+        command = [sys.executable, str(SETUP), '--vault', str(root), '--home', str(self.home)]
+        preview = subprocess.run(command, check=True, capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(json.loads(preview.stdout)['layout'], 'new-vault')
+        self.assertFalse(root.exists())
+        subprocess.run(command + ['--apply'], check=True, capture_output=True)
+        self.assertTrue((root / '.obsidian/app.json').is_file())
+        self.assertTrue((root / 'Home.md').is_file())
+        self.assertFalse((root / 'Agent Wiki').exists())
+        self.assertIn('[[_system/GUIDE|', (root / 'Home.md').read_text(encoding='utf-8'))
+        wiki = runtime.Wiki(root)
+        payload = self.note(wiki)
+        payload['notes'][0]['content'] += '\n[[' + payload['resolved'][0]['source'][:-3] + '|Evidence]]\n'
+        wiki.apply(payload)
+        self.assertFalse(wiki.check()['issues'])
+
+    def test_standalone_repeat_install_preserves_obsidian_settings(self):
+        root = self.folder / 'Agent Wiki'
+        self.setup_cli('--apply', mode='new-vault', vault=root)
+        settings = root / '.obsidian/app.json'
+        settings.write_text('{"showLineNumber": true}', encoding='utf-8')
+        before = smoke.snapshot(self.folder)
+        self.assertEqual(self.setup_cli('--apply', mode='new-vault', vault=root)['changed_files'], [])
+        self.assertEqual(before, smoke.snapshot(self.folder))
+
+    def test_existing_vault_uses_root_and_preserves_unrelated_files(self):
+        settings = self.vault / '.obsidian/app.json'
+        settings.parent.mkdir()
+        settings.write_bytes(b'{"showLineNumber": true}\n')
+        (self.vault / 'Personal.md').write_bytes(b'Existing personal note\n')
+        (self.vault / '.gitignore').write_bytes(b'attachments/\n')
+        before = smoke.snapshot(self.vault)
+        self.setup_cli('--agents', 'codex', '--apply', mode='existing-vault')
+        self.assertTrue((self.vault / '_system/installation.json').is_file())
+        self.assertFalse((self.vault / 'Agent Wiki').exists())
+        after = smoke.snapshot(self.vault)
+        for path in ('Personal.md', '.obsidian/app.json'):
+            self.assertEqual(before[path], after[path])
+        ignores = (self.vault / '.gitignore').read_text(encoding='utf-8')
+        self.assertTrue(ignores.startswith('attachments/\n'))
+        self.assertNotIn('\n*\n', ignores)
+        self.assertEqual(self.setup_cli('--agents', 'codex', '--apply', mode='existing-vault')['changed_files'], [])
+        self.assertEqual(after, smoke.snapshot(self.vault))
+
+    def test_existing_vault_conflict_prevents_partial_installation(self):
+        (self.vault / 'Home.md').write_bytes(b'My existing home page')
+        before = smoke.snapshot(self.folder)
+        self.setup_cli('--apply', mode='existing-vault', ok=False)
+        self.assertEqual(before, smoke.snapshot(self.folder))
+
+    def test_existing_vault_namespace_is_not_adopted(self):
+        folder = self.vault / 'wiki'
+        folder.mkdir()
+        (folder / 'notes.md').write_bytes(b'Unrelated wiki')
+        before = smoke.snapshot(self.folder)
+        self.setup_cli('--apply', mode='existing-vault', ok=False)
+        self.assertEqual(before, smoke.snapshot(self.folder))
+
+    def test_new_vault_does_not_nest_inside_another_vault(self):
+        (self.vault / '.obsidian').mkdir()
+        self.setup_cli('--apply', mode='new-vault', vault=self.vault / 'Agent Wiki', ok=False)
+        self.assertFalse(self.root.exists())
+        self.setup_cli('--apply')
+        self.assertTrue((self.root / 'Home.md').is_file())
+        self.assertFalse((self.root / '.obsidian').exists())
+
+    def test_new_vault_does_not_adopt_nonempty_folder(self):
+        (self.vault / 'Personal.md').write_bytes(b'My note')
+        before = smoke.snapshot(self.folder)
+        self.setup_cli('--apply', mode='new-vault', ok=False)
+        self.assertEqual(before, smoke.snapshot(self.folder))
+
+    def test_current_folder_can_be_selected_explicitly_as_vault(self):
+        result = subprocess.run([sys.executable, str(SETUP), '--vault', '.', '--mode', 'existing-vault',
+                                 '--home', str(self.home), '--apply'], cwd=self.vault,
+                                check=True, capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(Path(json.loads(result.stdout)['wiki_root']), self.vault)
+        self.assertTrue((self.vault / 'wiki').is_dir())
+        self.assertFalse(self.root.exists())
 
     def test_both_agents_preserve_instructions_and_repeat_install(self):
         instruction = self.home / '.codex/AGENTS.md'; instruction.parent.mkdir(parents=True)

@@ -36,6 +36,8 @@ class Wiki:
         self.system = self.root / '_system'
         if not (self.system / 'installation.json').is_file():
             raise ValueError('Not an initialized Agent Wiki; run the setup skill first')
+        installation = json.loads((self.system / 'installation.json').read_text(encoding='utf-8'))
+        self.link_prefix = installation.get('link_prefix', self.root.name + '/')
 
     def path(self, rel, prefix=None):
         p = Path(rel)
@@ -131,7 +133,7 @@ class Wiki:
                 if not self.path(source, 'sources').is_file():
                     raise ValueError(rel + ': missing source ' + source)
             for link in re.findall(r'\[\[([^\]|#]+)(?:[^\]]*)\]\]', body):
-                target = link.removeprefix(self.root.name + '/')
+                target = link.removeprefix(self.link_prefix) if self.link_prefix else link
                 if not target.endswith('.md'):
                     target += '.md'
                 if target not in (documents or {}) and not self.path(target).is_file():

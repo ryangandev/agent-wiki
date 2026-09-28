@@ -5,6 +5,8 @@ Other agents can use the generated Markdown entrypoint with their supported inst
 
 The runtime supports selective catalog search and section reads, content-addressed capture, source dispositions, checked publication, revision history, recovery, incremental review and no-op maintenance.
 The installer supports read-only preview, conflict detection, instruction preservation and repeat installation without resetting knowledge.
+New installations default to an independent vault; selected existing vaults can use their root directly or an explicitly requested subfolder.
+Existing-vault mode preserves unrelated notes and settings and reports namespace conflicts before writing.
 
 The standard-library test suite exercises these mechanics in temporary vaults and fake home directories.
 The repository's CI tests Python 3.10 and 3.13 on macOS, Linux and Windows; use the actual workflow result as evidence for a specific commit.

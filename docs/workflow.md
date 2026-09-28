@@ -23,6 +23,10 @@ flowchart TD
 
 ## Entry and retrieval
 
+Installation starts by choosing a new standalone vault, an existing vault root, or an explicit subfolder.
+The default is a standalone `Agent Wiki` vault, with its location chosen by the user.
+Once installed, all layouts use the same knowledge lifecycle and selective retrieval rules.
+
 Each participating agent receives a short global routing rule and, where supported, a small runtime skill.
 The rule does not require a wiki read on every task.
 It directs the agent to recall only when the current context cannot answer a question about historical intent, decisions, constraints or lessons.

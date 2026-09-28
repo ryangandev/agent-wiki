@@ -2,7 +2,7 @@
 
 [English](README.md) · [安装 Skill](skills/agent-wiki-setup/SKILL.md) · [完整工作流](docs/workflow.md)
 
-给多个 Agent 共用的长期知识库，以普通 Markdown 文件保存在你自己的 Obsidian Vault 中。
+给多个 Agent 共用的长期知识库，默认创建一个独立的 Obsidian Vault，名称为 `Agent Wiki`，以普通 Markdown 文件保存。
 它记录值得保留的决策、原因、项目约束与可复用经验，让 Agent 在需要时找回上下文，减少重复推演。
 无需每次对话加载整个知识库。
 
@@ -17,7 +17,9 @@
 请使用 https://github.com/ryangandev/agent-wiki/tree/main/skills/agent-wiki-setup
 中的 Skill，在我的电脑上配置私人 Agent Wiki。
 请阅读 SKILL.md，取得完整的 Skill 目录，包括 scripts 和 assets。
-如果不知道我的 Vault 路径、要接入的 Agent 或时区，请先询问。
+请默认推荐新建独立的 Agent Wiki Vault，并询问创建位置。
+如果我选择现有 Vault，或者说明当前文件夹就是 Vault，请直接使用它的根目录。
+要接入的 Agent 或时区不明确时，请询问。
 安装后运行隔离验证；如果当前 Agent 支持定时任务，请通过其正式接口配置维护。
 请分别说明文件安装、各 Agent 的实际访问能力以及定时任务是否验证成功。
 ```
@@ -25,6 +27,33 @@
 Codex 用户也可以让内置 Skill Installer 安装这个 Skill URL，然后调用 `$agent-wiki-setup`。
 Claude Code 或其他兼容 Agent 可以将完整 Skill 目录安装到自己的 Skill 目录，或克隆仓库后直接指定 `SKILL.md`。
 安装 Skill 后仍需执行一次配置，选择你的私人知识库位置。
+
+## 先选择在哪里创建
+
+| 方式 | 结果 |
+| --- | --- |
+| **新建独立 Vault，默认推荐** | 在你选择的位置创建 `Agent Wiki`，这个文件夹本身就是 Vault |
+| **使用现有 Vault 或当前文件夹** | 确认该文件夹就是 Vault 后，直接在根目录配置，保留其他笔记和设置 |
+| **放进现有 Vault 的子文件夹** | 只有明确选择时，才创建 `<现有 Vault>/Agent Wiki` |
+
+安装 Skill 会先确认尚未明确的位置和方式，不会因为当前工作目录存在就擅自把它当作 Vault。
+独立 Vault 便于单独管理 Agent 的权限、同步和备份，也让 Agent 知识与个人笔记分开。
+如果你希望与现有笔记在同一个 Vault 内互相链接，可以选择后两种方式。
+
+默认生成：
+
+```text
+Agent Wiki/        ← 这个文件夹本身就是 Vault
+├── .obsidian/
+├── Home.md
+├── wiki/
+├── sources/
+└── _system/
+```
+
+生成后，在 Obsidian 中选择“Open folder as vault”，打开这个文件夹。
+安装器负责准备文件，不会自动把 Vault 注册或打开到 Obsidian 中。
+如果现有 Vault 中已有同名工作流目录或不同内容的 `Home.md`，安装器会停止并报告冲突。
 
 ## 从开始到结束的循环
 
@@ -51,7 +80,7 @@ Obsidian 负责存储、链接和编辑，Agent 负责理解和整理，Python �
 
 ## 安装条件与边界
 
-需要 Python 3.10 或以上，以及一个你选定的 Vault 或 Markdown 文件夹。
+需要 Python 3.10 或以上，以及你选定的新 Vault 创建位置或现有 Vault。
 工具本身没有第三方 Python 依赖，不需要 Obsidian 插件或 API Key。
 命令行安装方法见 [英文 README](README.md#set-up-from-the-command-line)。
 

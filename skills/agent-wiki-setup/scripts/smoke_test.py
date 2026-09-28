@@ -18,11 +18,10 @@ def run_smoke(tool):
     checks = []
     with tempfile.TemporaryDirectory(prefix='agent-wiki-smoke-') as folder:
         temp = Path(folder).resolve()
-        vault = temp / 'Vault with spaces 知识'; vault.mkdir()
+        root = temp / 'Agent Wiki 知识'
         setup = Path(__file__).with_name('setup_wiki.py')
-        subprocess.run([sys.executable, str(setup), '--vault', str(vault), '--home', str(temp / 'home'), '--apply'],
+        subprocess.run([sys.executable, str(setup), '--vault', str(root), '--home', str(temp / 'home'), '--apply'],
                        check=True, capture_output=True, text=True, encoding='utf-8')
-        root = vault / 'Agent Wiki'
         def run(*args, fails=False):
             result = subprocess.run([sys.executable, str(tool), '--root', str(root), *args],
                                     capture_output=True, text=True, encoding='utf-8')

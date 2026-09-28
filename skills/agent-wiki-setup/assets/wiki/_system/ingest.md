@@ -26,7 +26,7 @@ Use a stable project slug for scope; `cross-project` is useful for general metho
 sources contains existing wiki-relative paths beginning with `sources/`.
 as_of is the date the evidence supports, not merely today's maintenance date.
 Headings and body may use the user's language.
-Use full vault-relative Obsidian links, for example `[[__WIKI_NAME__/wiki/decisions/example|Example]]`.
+Use full vault-relative Obsidian links, for example `[[__WIKI_LINK_PREFIX__wiki/decisions/example|Example]]`.
 Aim for short project summaries and focused pages, not a page per conversation.
 
 ## Publish

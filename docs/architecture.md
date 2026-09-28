@@ -18,6 +18,12 @@ User knowledge and generated paths never belong in this repository.
 
 ## Installation
 
+Three layouts share the same runtime: a new standalone vault by default, an explicitly selected existing vault root, or an opt-in subfolder.
+The CLI takes the exact vault path and reports the actual wiki root; it never infers that the current working directory is the vault.
+The setup skill recommends the name `Agent Wiki` and asks for unresolved layout and location choices.
+New-vault mode prepares minimal Obsidian configuration; existing-vault mode preserves configuration and unrelated notes, while refusing occupied workflow namespaces.
+Opening or registering the vault in Obsidian is separate from creating the files.
+
 The installer first builds a complete write plan and refuses conflicting content before executing it.
 Preview mode writes nothing, including directories.
 Execution verifies that each target still matches the planned previous bytes and uses atomic file replacement.
@@ -31,6 +37,8 @@ Repeat installation does not reset sources, compiled knowledge, ledger or review
 
 `assets/wiki/private.gitignore` is installed as `.gitignore` in the private wiki.
 The template has a different filename so its ignore policy does not hide distribution assets from Git.
+In existing-vault mode, only workflow-specific ignore paths are appended, preserving the user's existing rules and unrelated notes.
+The installation marker records the vault root, layout and vault-relative link prefix, so direct-root links do not incorrectly include the vault name.
 
 ## Publication and integrity
 
