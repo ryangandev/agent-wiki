@@ -10,7 +10,10 @@ flowchart TD
     Index --> Knowledge[Read relevant wiki sections]
     Knowledge --> Work[Use the knowledge in the task]
     Knowledge -. Verify or trace a claim .-> Evidence[Read selected sources]
-    Work --> Decision{New authorized durable knowledge?}
+    Work --> Checkpoint[Confirmed decision or substantive task completion]
+    Checkpoint --> Decision{New authorized durable knowledge?}
+    Logs[Configured new session segments] --> Intake[Bounded fallback review]
+    Intake --> Decision
     Decision -->|No| Stop[Finish without capture]
     Decision -->|Yes| Capture[Capture minimal evidence]
     Capture --> Pending[Pending source ledger]
@@ -23,7 +26,8 @@ flowchart TD
 
 ## Entry and retrieval
 
-Installation starts by choosing a new standalone vault, an existing vault root, or an explicit subfolder.
+Installation first discovers existing roots and connections and reuses them for upgrades.
+Only a new installation chooses a standalone vault, existing vault root or explicit subfolder.
 The default is a standalone `Agent Wiki` vault, with its location chosen by the user.
 Once installed, all layouts use the same knowledge lifecycle and selective retrieval rules.
 
@@ -38,11 +42,13 @@ Its keyword search needs useful titles, aliases and multilingual keywords; it is
 
 ## Capture and compilation
 
-A new supported, authorized durable conclusion is the capture trigger.
+The immediate checkpoint follows a user-confirmed decision or corrected lasting requirement, and precedes substantive task completion.
+The agent evaluates current context without loading the wiki; qualifying supported knowledge triggers capture.
 The agent writes minimal evidence with provenance, event time when known, and explicit distinctions between quotes, summaries and unresolved claims.
 Python assigns the source a content-derived path, so an identical capture is a no-op.
 
-Daily maintenance examines all pending sources, including those left after missed runs.
+Daily maintenance first reviews configured new session segments with sessions.py, including unacknowledged batches from interrupted runs.
+It captures minimal missed evidence and acknowledges every reviewed message with a reason, then examines all pending sources.
 The agent searches for related conclusions before writing and records one disposition per source version: compiled, duplicate, rejected or needs-review.
 Changed dispositions can be recorded later, preserving earlier ledger history.
 Semantic duplicates can point to an existing knowledge page without creating another page.
@@ -86,5 +92,7 @@ The host must actually run an agent with access to the private wiki.
 Merely invoking a Python command from cron does not compile knowledge.
 The setup skill verifies filesystem behavior separately from each agent's access and scheduler behavior.
 
-Only recorded sources are visible to this loop.
-Adding another agent requires giving it the entrypoint and access; installing one skill does not expose every other agent's conversations.
+Configured local Codex and Claude histories provide fallback intake; read the installed sessions.md for exact coverage and acknowledgement.
+Other agents require their own compatible adapter for fallback, while immediate capture uses the shared protocol.
+Installing one skill does not expose every agent or computer.
+System checkpoints distinguish reviewed-empty input from input never reviewed; their updates do not create knowledge notes.

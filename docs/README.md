@@ -8,6 +8,7 @@
 | Check implementation and validation boundaries | [Status](status.md) |
 | Execute agent-assisted installation | [Setup skill](../skills/agent-wiki-setup/SKILL.md) |
 | Configure custom locations or existing files | [Installation details](../skills/agent-wiki-setup/references/installation.md) |
+| Review missed captures | [Session intake](../skills/agent-wiki-setup/assets/wiki/_system/sessions.md) |
 | Connect a scheduler | [Maintenance scheduling](../skills/agent-wiki-setup/references/automation.md) |
 
 Runtime operating instructions are installed from [the wiki assets](../skills/agent-wiki-setup/assets/wiki/_system/GUIDE.md).

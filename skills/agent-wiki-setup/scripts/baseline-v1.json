@@ -1,0 +1,14 @@
+{
+  "entrypoint": "00cec09b6c9e7d48cfc47bf7101a9aa282558313b6f63f29da4572dc53c749d0",
+  "runtime/SKILL.md": "60939273b48717b8776fc6a57f34d5f7fc2dc41609dea0dbb48bb46fb7ac980c",
+  "runtime/agents/openai.yaml": "c7e86c810ff14b2c1da963a454f9ae1c4c60d08166c871c041f23af3e6363dae",
+  "wiki/Home.md": "1dcdff7042693aa8f37cc96d200a814182401bbed73a4272b443d4189a0a1a31",
+  "wiki/_system/ENTRYPOINT.md": "4f0ce5eae5c6a4979904073c396c002e534068ee17fb9f1337009f324c6cc6aa",
+  "wiki/_system/GUIDE.md": "4924e63e278217c8478c33a4d00c9013595238706341c0b3cf48af54eaf34a35",
+  "wiki/_system/ingest.md": "126367ce45da0deda52dbba9fbdb903fdc6dd7e969a70b6cde56d647b2798473",
+  "wiki/_system/maintain.md": "c495d93c3df9f6626cd6aa271c8ab48fde7d21adbc5188724eddd2fd257e5394",
+  "wiki/_system/maintenance-prompt.md": "bd82fc200a7aeef2c83c3d19ecf7636ddf9585d9c6f1f860460589694fdfa8de",
+  "wiki/_system/recall.md": "3e79c4285fd10cfb557da14003dda63b14d9c499c8c4fcdb3485575ec4675207",
+  "wiki/_system/tools/wiki.py": "e060d3d34934a183aa8cf7c8c5bb97110cc432249c12d047a2176f9cee2e6516",
+  "wiki/private.gitignore": "755a6e0b6362ca491ac7e8d1004387a20bd8eb2a18e542a3f6c013362664111e"
+}

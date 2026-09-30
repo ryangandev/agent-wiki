@@ -1,16 +1,18 @@
 # Current status
 
-The distribution includes a self-contained setup skill, an empty private wiki template, optional Codex and Claude Code entrypoints, a portable Python runtime and installation documentation in English and Chinese.
-Other agents can use the generated Markdown entrypoint with their supported instruction mechanism.
+Release 2.0.0 supports explicit capture checkpoints, selective recall and opt-in incremental local Codex/Claude session review before daily compilation.
+The runtime keeps original evidence separate from canonical knowledge, with deduplication, version checks, recovery and changed-scope weekly review.
 
-The runtime supports selective catalog search and section reads, content-addressed capture, source dispositions, checked publication, revision history, recovery, incremental review and no-op maintenance.
-The installer supports read-only preview, conflict detection, instruction preservation and repeat installation without resetting knowledge.
-New installations default to an independent vault; selected existing vaults can use their root directly or an explicitly requested subfolder.
-Existing-vault mode preserves unrelated notes and settings and reports namespace conflicts before writing.
+Installation discovers existing connections, reuses an existing skill location and wiki, and updates recognized managed files in place.
+Known public v1 templates can upgrade automatically; unversioned or locally customized files require review of an exact change plan.
+Repeat installation preserves knowledge and processing state, and the setup skill updates existing scheduler jobs instead of creating duplicates.
 
-The standard-library test suite exercises these mechanics in temporary vaults and fake home directories.
-The repository's CI tests Python 3.10 and 3.13 on macOS, Linux and Windows; use the actual workflow result as evidence for a specific commit.
+The standard-library suite covers temporary installations and fake histories, including interruption, malformed records, long messages, fork duplication, archiving, evidence validation and upgrades.
+CI runs Python 3.10 and 3.13 on macOS, Linux and Windows; use the actual workflow result for the published commit.
+Real-agent acceptance is separate: verify implicit capture, routine work without capture, and a full fallback review/compile cycle on each host.
+CLI tests do not establish model quality or unattended scheduler permissions.
 
-Scheduling remains a host integration step.
-No background service, automatic chat-history import, embedding search, automatic upgrade or cross-device write coordination is included.
-Model judgment, host skill availability and real unattended write access must be checked during each user's setup.
+No background service or model API is installed by Python.
+Scheduling uses the host's supported interface and requires access to configured histories and the private wiki.
+Unconfigured agents, deleted/inaccessible logs and other computers remain outside fallback coverage.
+Cross-device writer coordination, embedding search and perfect semantic recall are not provided.

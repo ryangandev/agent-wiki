@@ -34,7 +34,7 @@ Generated links use vault-relative paths for the selected layout.
 
 ## Agent connections
 
-`--agents codex` writes a runtime skill to `~/.agents/skills/agent-wiki` and appends a small managed block to `~/.codex/AGENTS.md`.
+`--agents codex` reuses a single existing runtime skill at `~/.codex/skills/agent-wiki` or `~/.agents/skills/agent-wiki`; new connections use the latter and appends a small managed block to `~/.codex/AGENTS.md`.
 `--agents claude` writes the runtime skill to `~/.claude/skills/agent-wiki` and appends the same block to `~/.claude/CLAUDE.md`.
 Existing unrelated instruction text is preserved, including when both instruction files resolve to the same symlink target.
 
@@ -43,17 +43,42 @@ The script does not infer these environment variables, which also keeps isolated
 `--home` changes the base home for all defaults and is useful for testing.
 Other agents can use the generated ENTRYPOINT without a skill loader.
 
-## Existing installations
+## Discover and update existing installations
 
-Preview mode does not write files or create directories.
-An identical rerun is a no-op and does not reset the catalog, ledger, review checkpoint or knowledge.
-A nonempty unrecognized new-vault or subfolder destination, reserved-name conflicts in an existing vault, a differing skill, modified managed templates, or another wiki entrypoint causes an explicit conflict before writes.
-This version initializes new installations; it is not an automatic upgrader for customized wikis.
-Review and merge customizations explicitly instead of using a force-overwrite option.
-Keep a private backup of irreplaceable notes and sources; Obsidian is the editor, not a backup guarantee.
+Run `setup_wiki.py --discover --agents codex claude` before choosing a new destination.
+Discovery reads current entrypoints and skills without writing.
+Reuse the reported wiki root; recorded layout and timezone are inferred when omitted.
+An exact existing subfolder wiki path is accepted and resolved to its recorded vault boundary.
+Multiple skill locations or connections to a different wiki stop installation before writes.
+The installer never creates a second vault or skill to work around those conflicts.
+
+Version 2 stores package version, settings and managed file hashes in `_system/installation.json`.
+Rerunning the current installer upgrades unchanged managed files in place and backs up replaced files under `_system/setup-backups/`.
+Known public version 1 files are recognized using bundled fingerprints.
+A newer installed release is never downgraded.
+An identical rerun is a no-op, preserving knowledge, sources, catalog, ledger, review state, history intake checkpoints, Home and Obsidian settings.
+Global instruction symlinks are retained and their shared target is updated once.
+
+For modified managed files, preview reports conflicts containing exact before/after hashes and makes no changes.
+Save that JSON outside the wiki, inspect the current files and proposed templates, and merge meaningful local policy before proceeding.
+Pass `--reviewed-plan <conflicts.json> --apply` only after reviewing those exact replacements within the user's update authorization.
+If a file or the proposed replacement changes after review, acknowledgement no longer matches and the installer refuses it.
+There is no blanket force-overwrite flag.
+
+An existing unversioned wiki requires `--adopt-existing` after verifying its policy, runtime and knowledge layout.
+Its differing files still require the same reviewed plan; adoption does not reset knowledge or processing state.
+Unknown occupied namespaces are never silently adopted.
+If a customization must stay, preserve it in the proposed managed template or keep that file unchanged before accepting the plan; do not approve a replacement that discards user policy.
+
+## History and scheduling
+
+The installer does not enable history access or create jobs implicitly.
+The setup skill configures authorized local adapters using `_system/sessions.md`, with an explicit start timestamp.
+Fresh installs start at installation time; past conversations require a selected backfill window.
+Existing history config and checkpoints are reused, not reset by reinstalling.
+Find and update the existing matching scheduler task before considering creation of another; see automation.md.
 
 The private wiki's `.gitignore` excludes its contents from accidental Git staging; existing-vault mode scopes the added ignores to workflow files.
-Users who intentionally version their private vault may adjust that policy themselves.
-Do not initialize the wiki inside the public distribution checkout or publish generated setup backups.
+Keep the vault and private setup backups outside this public checkout.
 
 References: [Obsidian vaults](https://help.obsidian.md/manage-vaults), [Obsidian configuration folders](https://help.obsidian.md/Files+and+folders/Configuration+folder), [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Claude skills](https://code.claude.com/docs/en/skills).

@@ -10,6 +10,8 @@
 | `assets/runtime/` within that skill | Small runtime skill rendered with the user's local wiki path |
 | `assets/wiki/` within that skill | Empty vault templates and the canonical runtime tool |
 | `assets/wiki/_system/tools/wiki.py` within that skill | Local capture, index, publication, ledger, review and recovery |
+| `assets/wiki/_system/tools/sessions.py` within that skill | Incremental local message selection, checkpoints, bounded batches and acknowledgement |
+| `tests/test_intake_upgrade.py` | Intake recovery, coverage and safe upgrade regression tests |
 | `tests/test_workflow.py` | Installer and runtime behavior, including filesystem failure cases |
 
 The public setup skill is self-contained so a skill installer can fetch only that directory.
@@ -28,7 +30,10 @@ The installer first builds a complete write plan and refuses conflicting content
 Preview mode writes nothing, including directories.
 Execution verifies that each target still matches the planned previous bytes and uses atomic file replacement.
 Ordinary execution errors roll back completed writes; empty directories may remain after a failed setup.
-This is not a general multi-process transaction manager or an in-place upgrade system.
+This is not a general multi-process transaction manager.
+Versioned managed-file fingerprints enable in-place upgrades, and known v1 templates have normalized migration fingerprints.
+Modified or unversioned files require a reviewed before/after hash plan; changed files are backed up before replacement.
+Discovery reuses existing agent skill locations, entrypoints, root layout and timezone instead of creating duplicates.
 
 Only the marked instruction block is appended; unrelated global instructions are retained.
 When global files intentionally share a symlink target, the target is updated once and the symlink remains.
@@ -72,7 +77,22 @@ Bounded retrieval reduces context growth but does not guarantee complete recall 
 
 The review checkpoint is acknowledged only against an unchanged candidate snapshot.
 No-op publication and repeated setup avoid rewriting identical files.
-Read-only maintenance leaves note and state timestamps unchanged; a first write operation can create the local lock file.
+Read-only wiki checks leave note and state timestamps unchanged; session review may update system coverage metadata without touching knowledge notes.
+A first write operation can create the local lock file.
+
+## Session intake
+
+The separate sessions.py adapter reads only explicitly configured local history roots since a selected timestamp.
+It selects human messages and visible assistant responses, excluding thinking, tool output, injected context, approval-review messages and maintenance conversations.
+Offsets and consumed-prefix hashes detect truncation or rewrites; partial final JSON records are retried.
+Session IDs survive moves into Codex archived_sessions, and original message identities deduplicate forked Claude messages.
+Long messages are chunked without dropping their suffix, with original locators for bounded context lookup.
+
+One private pending batch is retained until the agent supplies a disposition for every item.
+Acknowledgement verifies captured source hashes or existing duplicate targets before committing checkpoints and removing batch text.
+A retry after checkpoint persistence but before batch removal recognizes the completed batch.
+The latest disposition receipt and message fingerprints are metadata, not retrieved knowledge.
+Neither selection nor receipt validation proves the model correctly classified every claim.
 
 ## Validation boundaries
 

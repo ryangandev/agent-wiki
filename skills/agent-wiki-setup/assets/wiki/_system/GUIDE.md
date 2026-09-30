@@ -19,7 +19,8 @@ The latter two are read only to trace a claim or resolve a conflict, never as a 
 
 Obsidian stores and links the Markdown; the agent evaluates and synthesizes evidence.
 Python filters the catalog, checks versions and links, deduplicates exact captures and publishes changes.
-It does not judge truth or completeness, scan chats, call a model, or make the host run on a schedule.
+It does not judge truth or completeness, call a model, or make the host run on a schedule.
+The optional local session adapter selects bounded new message segments for agent review; only accepted minimal evidence becomes a source.
 
 ## Evidence and authority
 
@@ -37,11 +38,13 @@ Preserve meaningful changes of direction, dates, reasons and applicability bound
 Keep event time separate from capture time; use unknown rather than inventing a date.
 Merge redundant wording without deleting the sole evidence for a decision.
 Mark projects historical only with evidence that the work ended, not merely because time passed.
-No new knowledge means no note, timestamp refresh, daily report or routine status message.
+No new knowledge means no knowledge note, note timestamp refresh, daily report or routine status message.
+System review checkpoints may advance to distinguish reviewed-empty input from input never checked.
 
 ## Connected agents
 
 Each agent needs the small entrypoint and read/write access to `__WIKI_ROOT__`.
-Other agents' sessions are not automatically accessible; a session that never captured a source is not covered by nightly maintenance.
+Only explicitly configured local Codex and Claude histories are covered by incremental fallback review.
+Use sessions.md for coverage, checkpoints, privacy and recovery; unconfigured or inaccessible agents and machines remain outside coverage.
 Use one writer machine at a time when the vault is synced across devices: the local lock does not coordinate independent computers.
 Maintain a private backup for irreplaceable sources; internal revision history is not a complete backup.

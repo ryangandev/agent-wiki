@@ -5,18 +5,19 @@ The host scheduler owns execution; this file does not schedule itself.
 
 ## Daily
 
-1. Run pending and check with `_system/tools/wiki.py`.
-2. If the only issue is a stale catalog, rebuild and check again; other errors require inspection.
-3. With no work and no weekly review due, finish without changing notes, timestamps or reports.
-4. Read ingest.md and only the pending sources when compilation is needed.
-5. Search related knowledge; compile supported claims, merge duplicates, reject noise or register unresolved conflicts using apply.
-6. Repeat pending/check until the accessible backlog is handled or a concrete problem prevents completion.
+1. Run `_system/tools/sessions.py status` and wiki.py pending/check.
+2. If session review is configured, read sessions.md and review bounded new batches before deciding there is no work.
+   Retry unacknowledged batches; preserve checkpoints on failure; process the backlog or explicitly report remaining coverage.
+3. Rebuild only a stale catalog; inspect and recover interrupted publication before publishing.
+4. Read ingest.md when sources are pending, search related conclusions and compile, deduplicate or register evidence conflicts with apply.
+5. Repeat pending/check after publication.
+6. With no pending sessions, sources or issues, finish quietly unless Sunday review has candidates.
 
-Process all pending sources, not only yesterday's files, so missed runs do not lose accumulated input.
-The input is what connected agents captured; do not scan all historical chats.
-Existing awaiting_review entries are already-known conflicts, not a reason for repeated notifications.
-Permission failure is a failure, not a successful no-op.
-Maintain only the wiki; do not change agent configuration, project code, external services or schedules.
+Process all unhandled input, not only yesterday, so a missed run can catch up.
+An unconfigured adapter is outside coverage, not proof of no new knowledge.
+Permission failures and malformed history are failures, not successful no-ops.
+Existing awaiting_review conflicts do not require repeated notifications.
+Maintain only this wiki and configured read-only history intake; do not alter agent configuration, project code, external services or schedules.
 
 ## Weekly
 

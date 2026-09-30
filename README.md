@@ -7,16 +7,16 @@ Keep decisions, their reasons, project constraints and reusable lessons that wou
 Agents search a compact local index only when that history matters, then read the relevant sections.
 
 This repository contains the workflow, an installable setup skill and Python tools.
-It contains no personal knowledge or sample conversations.
+It contains no personal knowledge or real conversations; tests use synthetic fixtures.
 Inspired by [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f); this is an independent implementation.
 
 ## How it works
 
 1. **Recall when needed.** Search the index for missing historical context; read a few selected sections and open evidence only when necessary.
-2. **Capture selectively.** Save a short, supported record when a conversation produces authorized durable knowledge.
-3. **Compile daily.** An agent processes pending sources into canonical knowledge pages, merging duplicates and retaining decision history.
+2. **Check capture at a clear moment.** After confirmed decisions or corrected requirements, and before completing substantive work, assess current context and save qualifying minimal evidence.
+3. **Catch omissions and compile daily.** Opt-in Codex/Claude adapters deliver bounded new session segments for review; an agent captures missed knowledge, then compiles pending sources and merges duplicates.
 4. **Review weekly.** Review changed themes, resolve conflicts and compress repetition without erasing useful evidence.
-5. **Do nothing when nothing changed.** No empty daily notes, timestamp refreshes or routine reports.
+5. **Keep no-change runs quiet.** No empty daily notes, knowledge timestamp refreshes or routine reports; system coverage checkpoints may advance.
 
 Code, live deployment status and other easily queried facts stay in their original systems.
 The wiki stores the reasoning those systems often omit.
@@ -29,10 +29,13 @@ Give your agent this request:
 Use https://github.com/ryangandev/agent-wiki/tree/main/skills/agent-wiki-setup
 to set up a private Agent Wiki on my computer.
 Read SKILL.md and obtain the complete skill directory, including its scripts and assets.
-Recommend a new standalone vault named Agent Wiki and ask where to create it.
+First detect and reuse any existing Agent Wiki, skills and maintenance job.
+Only if none exists, recommend a standalone vault named Agent Wiki and ask where to create it.
 If I choose an existing vault or say this folder is already my vault, use that root directly.
 Ask for any missing agent choices and timezone.
-Install the workflow, run its isolated verification, and configure maintenance
+Install or upgrade in place without duplicating the wiki, skills or jobs.
+Configure authorized local session review with an explicit start time.
+Run isolated verification and verify real agent behavior, then configure maintenance
 through my agent host's supported scheduler if available.
 Report installation, agent access and scheduling separately.
 ```
@@ -77,7 +80,9 @@ python3 skills/agent-wiki-setup/scripts/setup_wiki.py \
 Include only the agents you use, or omit `--agents` for a generic Markdown installation.
 On Windows, use your Python executable, such as `py -3`, and put the command on one line.
 Existing instructions are preserved; conflicting installations are reported before writing.
-An identical rerun leaves existing knowledge and processing state intact.
+An identical rerun is a no-op; unchanged managed files upgrade in place, with backups.
+Modified or unversioned installations require a reviewed plan, preserving knowledge and processing state.
+Use `setup_wiki.py --discover --agents codex claude` first when an installation may already exist.
 
 For an existing vault, pass its exact path with `--mode existing-vault`; `--vault .` uses the current folder itself when that is your intended vault.
 For an explicitly requested child folder, use `--mode subfolder` and optionally `--wiki-name "Agent Wiki"`.
@@ -122,12 +127,14 @@ See [scheduling and acceptance](skills/agent-wiki-setup/references/automation.md
 
 ## Boundaries
 
-- Only captured sources enter maintenance; it does not scan every chat or access another agent's session history.
+- History review is opt-in and incremental: only configured local Codex/Claude logs since the selected start time are covered.
+- Sources contain accepted minimal evidence, never full imported transcripts; unreviewed batches and coverage metadata stay outside the knowledge index.
 - Exact repeated captures are deduplicated by Python; semantic merging and judgment belong to the agent.
 - Retrieval has output limits, but this is not a promise of fixed token use or perfect recall.
 - Local writers use a lock, revision checks and a recovery journal; synced devices still need one writer machine at a time.
 - Keep private backups. Generated workflow files are ignored by Git by default; do not publish private knowledge with this distribution.
-- Setup initializes new wikis and refuses conflicting customizations; it is not an automatic upgrade or migration tool.
+- Setup reuses existing paths and upgrades recognized managed files; local customizations need exact diff review before replacement.
+- Skill instructions improve triggering but cannot guarantee model judgment; verify implicit capture, negative cases and fallback intake on each host.
 
 ## Develop
 

@@ -4,7 +4,16 @@
 
 Preserve supported decisions and reasons, lasting constraints, useful research with unresolved questions, and verified reusable lessons.
 Skip routine progress, transcript dumps, test counts, branch cleanup, deployment announcements and implementation facts easily queried from code.
-An empty capture queue is normal.
+Evaluate after a user confirms or corrects an important decision or requirement, and before completing substantive work.
+This evaluation uses the current conversation and does not require loading the wiki.
+A confirmed project constraint can be valuable even when it may change later; durable does not mean permanent.
+Do not require the user to say "remember this" again when capture is already authorized.
+Project-specific preferences stay within that project, not the user's global profile.
+An agent proposal or recommendation alone is not a user-confirmed decision.
+If an authoritative repository document already preserves the decision adequately, avoid copying it; add a minimal routing reference only if it improves later discovery.
+Testing activity is noise; a verified causal lesson about why a failure escaped and how to detect it can be reusable knowledge.
+No qualifying knowledge means no capture, timestamp refresh or report.
+An empty queue alone does not establish that recent conversations were reviewed.
 
 ## Capture evidence
 
